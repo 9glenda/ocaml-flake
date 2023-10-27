@@ -36,6 +36,12 @@ in
                   name of the dune package
                 '';
               };
+              pkgs = lib.mkOption {
+                type = types.listOf types.pkgs;
+                description = lib.mdDoc ''
+                  list of packages to put into the module
+                '';
+              };
               devPackages = lib.mkOption {
                 type = types.attrsOf types.str;
                 description = lib.mdDoc ''
@@ -48,9 +54,17 @@ in
                 on = opam-nix.lib.${system};
               in
               {
-              devShell = pkgs.mkShell {
-                nativeBuildInputs = with pkgs; [ ocaml ];
-              };
+                package = pkgs.writeShellApplication {
+                  inherit name;
+                  text = ''
+                      echo "${name}"
+                    '';
+                };
+
+              # devShell = pkgs.mkShell {
+              #   nativeBuildInputs = with pkgs; [ ocaml ];
+              # };
+
               };
           });
         in
