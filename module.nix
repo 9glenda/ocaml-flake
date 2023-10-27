@@ -24,13 +24,14 @@ in
               packages = lib.mkOption {
                 type = types.attrsOf projectSubmodule;
                 description = lib.mdDoc ''
+                  dune packages
                 '';
               };
               inputs = {
                 opam-nix = lib.mkOption {
                   type = types.raw;
                   description = lib.mdDoc ''
-                    opam-nix
+                      opam-nix flake input
                     '';
                 };
               };

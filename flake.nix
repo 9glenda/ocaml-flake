@@ -5,9 +5,9 @@
   };
   outputs = { self, opam-nix, ... }: {
     flakeModule = {
-      imports = [./module.nix];
+      imports = [ ./module.nix ];
       config = {
-        ocaml.inputs.opam-nix = opam-nix;
+        perSystem.ocaml.inputs.opam-nix = opam-nix;
       };
     };
   };
