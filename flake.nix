@@ -30,21 +30,27 @@
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
-  outputs = inputs@{ opam-nix, flake-parts, treefmt-nix, ... }: let 
+  outputs = inputs @ {
+    opam-nix,
+    flake-parts,
+    treefmt-nix,
+    ...
+  }: let
     flakeModule = {
-      imports = [ ./module.nix ];
+      imports = [./flake-module.nix];
       config = {
         perSystem.ocaml.inputs.opam-nix = opam-nix;
       };
     };
-  in flake-parts.lib.mkFlake { inherit inputs; } {
-  imports = [
-    flakeModule
-    treefmt-nix.flakeModule
-  ];
-  systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
-  perSystem = _: {
-    treefmt = import ./treefmt.nix;
-  };
-};
+  in
+    flake-parts.lib.mkFlake {inherit inputs;} {
+      imports = [
+        flakeModule
+        treefmt-nix.flakeModule
+      ];
+      systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin"];
+      perSystem = _: {
+        treefmt = import ./treefmt.nix;
+      };
+    };
 }

@@ -1,7 +1,6 @@
 # Largely inspired by:
 # https://github.com/srid/proc-flake/blob/master/flake-module.nix
 {
-  self,
   config,
   lib,
   flake-parts-lib,
@@ -23,18 +22,16 @@ in {
       mkPerSystemOption
       ({
         config,
-        self',
-        inputs',
         pkgs,
         system,
         ...
       }: let
         ocamlSubmodule = types.submodule {
           options = {
-            packages = lib.mkOption {
-              type = types.attrsOf projectSubmodule;
+            duneProjects = lib.mkOption {
+              type = types.attrsOf duneProjectSubmodule;
               description = lib.mdDoc ''
-                dune packages
+                dune Projects. 
               '';
             };
             inputs = {
@@ -47,12 +44,21 @@ in {
             };
           };
         };
-        projectSubmodule = types.submodule (args @ {name, ...}: {
+        duneProjectSubmodule = types.submodule ({name, ...}: let 
+          attrName = name;
+        in {
           options = {
             name = lib.mkOption {
               type = types.str;
               description = lib.mdDoc ''
-                name of the dune package
+                name of the dune package. Defined in dune-project
+              '';
+              default = "${attrName}";
+            };
+            src = lib.mkOption {
+              type = types.path;
+              description = lib.mdDoc ''
+                name of the dune package. Defined in dune-project
               '';
             };
             settings = let
@@ -61,7 +67,8 @@ in {
               devPackages = lib.mkOption {
                 type = types.attrsOf types.str;
                 description = lib.mdDoc ''
-                  development packages
+                  development packages like the lsp and ocamlformat.
+                  Those packages get installed in the dev shell too.
                 '';
                 default = {
                   ocaml-lsp-server = "1.16.2";
@@ -72,7 +79,7 @@ in {
               };
               overlay = lib.mkOption {
                 type = types.raw;
-                default = final: prev: {
+                default = _final: prev: {
                   ${packageName} = prev.${packageName}.overrideAttrs (_: {
                     doNixSupport = false;
                   });
@@ -86,7 +93,7 @@ in {
               query = lib.mkOption {
                 type = types.attrsOf types.str;
                 description = lib.mdDoc ''
-                  opam packages to install
+                  opam packages like the base compiler
                 '';
                 default = {
                   ocaml-base-compiler = "5.1.0";
@@ -110,7 +117,7 @@ in {
             opam-nixLib = opam-nix.lib.${system};
             devPackagesQuery = value.settings.devPackages;
             query = devPackagesQuery // value.settings.query;
-            scope = opam-nixLib.buildDuneProject {} "${package}" ./. query;
+            scope = opam-nixLib.buildDuneProject {} "${package}" value.src query;
             inherit (value.settings) overlay;
             scope' = scope.overrideScope' overlay;
             main = scope'.${package};
@@ -124,7 +131,7 @@ in {
             scoped = mkScopedProject name value;
           in
             scoped.main)
-          config.ocaml.packages;
+          config.ocaml.duneProjects;
 
           devShells = builtins.mapAttrs (name: value: let
             scoped = mkScopedProject name value;
@@ -134,7 +141,7 @@ in {
               inputsFrom = [main];
               buildInputs = devPackages;
             })
-          config.ocaml.packages;
+          config.ocaml.duneProjects;
         };
       });
   };
