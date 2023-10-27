@@ -54,12 +54,14 @@ in
                 on = opam-nix.lib.${system};
               in
               {
-                package = pkgs.writeShellApplication {
+                packages = {
+                  "${name}" = pkgs.writeShellApplication {
                   inherit name;
                   text = ''
                       echo "${name}"
                     '';
                 };
+              };
 
               # devShell = pkgs.mkShell {
               #   nativeBuildInputs = with pkgs; [ ocaml ];
