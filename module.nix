@@ -74,6 +74,7 @@ in
             description = lib.mdDoc ''
               Ocaml module
             '';
+            default = { };
           };
         });
   };
