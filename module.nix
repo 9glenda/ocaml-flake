@@ -7,7 +7,7 @@ let
   inherit (lib)
     types;
 
-  inputs = args.config.ocaml-nix_inputs;
+  inputs = args.config.ocaml-nix._inputs;
   inherit (inputs) opam-nix;
 in
 {
@@ -26,6 +26,9 @@ in
                 description = lib.mdDoc ''
                 '';
               };
+              # opam-nix = types.mkOption {
+              #   type = types.anything;
+              # };
             };
           };
           projectSubmodule = types.submodule (args@{ name, ... }: {
@@ -36,8 +39,8 @@ in
                   name of the dune package
                 '';
               };
-              pkgs = lib.mkOption {
-                type = types.listOf types.pkgs;
+              pkg = lib.mkOption {
+                type = types.package;
                 description = lib.mdDoc ''
                   list of packages to put into the module
                 '';
@@ -51,27 +54,10 @@ in
             };
             config =
               let 
-                on = opam-nix.lib.${system};
+                # on = opam-nix.lib.${system};
               in
               {
-                packages = {
-                  "${name}" = pkgs.stdenv.mkDerivation {
-                  inherit name;
-                  src = ./.;
-                    installPhase = ''
-    # $out is an automatically generated filepath by nix,
-    # but it's up to you to make it what you need. We'll create a directory at
-    # that filepath, then copy our sources into it.
-                      touch $src/${name}
-    mkdir $out
-    cp -rv $src/* $out
-  '';
-                };
-              };
-
-              # devShell = pkgs.mkShell {
-              #   nativeBuildInputs = with pkgs; [ ocaml ];
-              # };
+                pkg = pkgs.hello;
 
               };
           });
@@ -83,6 +69,43 @@ in
               Ocaml module
             '';
             default = { };
+          };
+          config = let 
+          in {
+            packages = builtins.mapAttrs (name: value: let 
+              # oc' = oc value.name;
+              package = value.name;
+              # inherit (config.ocaml) opam-nix;
+              on = opam-nix.lib.${system};
+              devPackagesQuery = {
+                ocaml-lsp-server = "1.16.2";
+                ocamlformat = "0.26.1";
+                utop = "2.13.1";
+                ocamlfind = "1.9.6";
+              };
+              query = devPackagesQuery // {
+                ocaml-base-compiler = "5.1.0";
+              };
+              scope = on.buildDuneProject { 
+                 # inherit repos;
+               } "${package}" ./. query;
+               overlay = final: prev: {
+                 # You can add overrides here
+                 ${package} = prev.${package}.overrideAttrs (_: {
+                   # Prevent the ocaml dependencies from leaking into dependent environments
+                   doNixSupport = false;
+                 });
+               };
+               scope' = scope.overrideScope' overlay;
+               # The main package containing the executable
+               main = scope'.${package};
+               # Packages from devPackagesQuery
+               devPackages = builtins.attrValues
+                 (pkgs.lib.getAttrs (builtins.attrNames devPackagesQuery) scope');
+
+              # inherit (oc') devPackagesQuery query scope overlay scope' main devPackages;
+            in main
+            ) config.ocaml.packages;
           };
         });
   };
