@@ -55,11 +55,17 @@ in
               in
               {
                 packages = {
-                  "${name}" = pkgs.writeShellApplication {
+                  "${name}" = pkgs.mkDerivation {
                   inherit name;
-                  text = ''
-                      echo "${name}"
-                    '';
+                  src = ./.;
+                    installPhase = ''
+    # $out is an automatically generated filepath by nix,
+    # but it's up to you to make it what you need. We'll create a directory at
+    # that filepath, then copy our sources into it.
+                      touch $src/${name}
+    mkdir $out
+    cp -rv $src/* $out
+  '';
                 };
               };
 
