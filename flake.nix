@@ -52,5 +52,8 @@
       perSystem = _: {
         treefmt = import ./treefmt.nix;
       };
+      flake = {
+        inherit flakeModule;
+      };
     };
 }

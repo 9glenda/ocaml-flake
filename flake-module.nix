@@ -31,7 +31,7 @@ in {
             duneProjects = lib.mkOption {
               type = types.attrsOf duneProjectSubmodule;
               description = lib.mdDoc ''
-                dune Projects. 
+                dune Projects.
               '';
             };
             inputs = {
@@ -44,7 +44,7 @@ in {
             };
           };
         };
-        duneProjectSubmodule = types.submodule ({name, ...}: let 
+        duneProjectSubmodule = types.submodule ({name, ...}: let
           attrName = name;
         in {
           options = {
