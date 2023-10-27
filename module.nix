@@ -55,7 +55,7 @@ in
               in
               {
                 packages = {
-                  "${name}" = pkgs.mkDerivation {
+                  "${name}" = pkgs.stdenv.mkDerivation {
                   inherit name;
                   src = ./.;
                     installPhase = ''
