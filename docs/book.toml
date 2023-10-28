@@ -13,9 +13,21 @@ edition = "2021"
 build-dir = "static"
 create-missing = true
 
+
 [preprocessor.index]
 
 [preprocessor.links]
+
+[output.html]
+mathjax-support = true
+git-repository-url = "https://github.com/9glenda/ocaml-flake/tree/main/docs"
+edit-url-template = "https://github.com/9glenda/ocaml-flake/tree/main/docs{path}"
+use-boolean-and = true
+boost-title = 2
+boost-hierarchy = 2
+boost-paragraph = 1
+expand = true
+heading-split-level = 2
 
 [output.html.search]
 limit-results = 15
