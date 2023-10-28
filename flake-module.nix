@@ -48,10 +48,15 @@ in {
             };
           };
         };
-        duneProjectSubmodule = types.submodule ({name, ...}: let
+        duneProjectSubmodule = types.submodule (args@{name, ...}: let
           attrName = name;
         in {
           options = {
+            outputs = {
+              package = lib.mkOption {
+                type = types.nullOr types.package;
+              };
+            };
             name = lib.mkOption {
               type = types.str;
               description = lib.mdDoc ''
@@ -109,6 +114,24 @@ in {
               };
             };
           };
+          config = {
+            outputs = let 
+              inherit (config.ocaml.inputs) opam-nix;
+              opam-nixLib = opam-nix.lib.${system};
+              devPackagesQuery = args.config.settings.devPackages;
+              query = devPackagesQuery // args.config.settings.packages;
+              scope =
+                opam-nixLib.buildDuneProject {} "${args.config.name}" args.config.src query;
+              scope' = scope.overrideScope' args.config.settings.overlay;
+              main = scope'.${args.config.name};
+              devPackages =
+                builtins.attrValues
+                (pkgs.lib.getAttrs (builtins.attrNames devPackagesQuery) scope')
+                ++ args.config.settings.extraDevPackages;
+            in {
+              package = main;
+            };
+          };
         });
       in {
         options.ocaml = lib.mkOption {
@@ -118,45 +141,53 @@ in {
           '';
           default = {};
         };
-        config = let
-          dunePkgs = config.ocaml.duneProjects;
-        in
-          if (dunePkgs != {})
-          then let
-            mkScopedProject = _name: value: rec {
-              inherit (config.ocaml.inputs) opam-nix;
-              inherit (value.settings) overlay;
-              inherit (value) name;
-              opam-nixLib = opam-nix.lib.${system};
-              devPackagesQuery = value.settings.devPackages;
-              query = devPackagesQuery // value.settings.packages;
-              scope =
-                opam-nixLib.buildDuneProject {} "${name}" value.src query;
-              scope' = scope.overrideScope' overlay;
-              main = scope'.${name};
-              devPackages =
-                builtins.attrValues
-                (pkgs.lib.getAttrs (builtins.attrNames devPackagesQuery) scope')
-                ++ value.settings.extraDevPackages;
-            };
-          in {
-            packages = builtins.mapAttrs (name: value: let
-              scoped = mkScopedProject name value;
-            in
-              scoped.main)
-            dunePkgs;
 
-            devShells = builtins.mapAttrs (name: value: let
-              scoped = mkScopedProject name value;
-              inherit (scoped) main devPackages;
-            in
-              pkgs.mkShell {
-                inputsFrom = [main];
-                buildInputs = devPackages;
-              })
-            dunePkgs;
-          }
-          else {};
+        config = let
+          duneProjects = config.ocaml.duneProjects;
+          filterProjects = duneProjects: lib.filterAttrs (n: v: v.outputs.package != null) duneProjects;
+        in
+        {
+          packages = builtins.mapAttrs (name: value: value.outputs.package) (filterProjects duneProjects);
+        };
+        # config = let
+        #   dunePkgs = config.ocaml.duneProjects;
+        # in
+        #   if (dunePkgs != {})
+        #   then let
+        #     mkScopedProject = _name: value: rec {
+        #       inherit (config.ocaml.inputs) opam-nix;
+        #       inherit (value.settings) overlay;
+        #       inherit (value) name;
+        #       opam-nixLib = opam-nix.lib.${system};
+        #       devPackagesQuery = value.settings.devPackages;
+        #       query = devPackagesQuery // value.settings.packages;
+        #       scope =
+        #         opam-nixLib.buildDuneProject {} "${name}" value.src query;
+        #       scope' = scope.overrideScope' overlay;
+        #       main = scope'.${name};
+        #       devPackages =
+        #         builtins.attrValues
+        #         (pkgs.lib.getAttrs (builtins.attrNames devPackagesQuery) scope')
+        #         ++ value.settings.extraDevPackages;
+        #     };
+        #   in {
+        #     packages = builtins.mapAttrs (name: value: let
+        #       scoped = mkScopedProject name value;
+        #     in
+        #       scoped.main)
+        #     dunePkgs;
+
+        #     devShells = builtins.mapAttrs (name: value: let
+        #       scoped = mkScopedProject name value;
+        #       inherit (scoped) main devPackages;
+        #     in
+        #       pkgs.mkShell {
+        #         inputsFrom = [main];
+        #         buildInputs = devPackages;
+        #       })
+        #     dunePkgs;
+        #   }
+        #   else {};
       });
   };
 }

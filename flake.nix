@@ -49,7 +49,7 @@
   in
     flake-parts.lib.mkFlake {inherit inputs;} {
       imports = [
-        # flakeModule
+        flakeModule
         # treefmt-nix.flakeModule
         # inputs.flake-root.flakeModule
       ];
