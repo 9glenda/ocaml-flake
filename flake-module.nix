@@ -99,10 +99,16 @@ in {
               package = lib.mkOption {
                 type = types.nullOr types.package;
                 readOnly = true;
+                description = ''
+                  used internally
+                '';
               };
               devShell = lib.mkOption {
                 type = types.nullOr types.raw;
                 readOnly = true;
+                description = ''
+                  used internally
+                '';
               };
             };
 
@@ -154,11 +160,11 @@ in {
                 '';
                 default = {};
                 example = ''
-                {
-                  shellHook = \'\'
-                    echo "example shell hook"
-                  \'\';
-                };
+                  {
+                    shellHook = \'\'
+                      echo "example shell hook"
+                    \'\';
+                  };
                 '';
               };
 
