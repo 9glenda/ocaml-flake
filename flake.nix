@@ -40,7 +40,11 @@
     flakeModule = {
       imports = [./flake-module.nix];
       config = {
-        perSystem.ocaml.inputs.opam-nix = opam-nix;
+        perSystem.ocaml.inputs = {
+          opam-nix = opam-nix;
+
+          treefmt-nix = treefmt-nix;
+        };
       };
     };
   in
@@ -62,7 +66,7 @@
         ...
       }: {
         # flake-root.projectRootFile = "flake.nix";
-        treefmt = import ./treefmt.nix;
+        # treefmt = import ./treefmt.nix;
           # // {
           #   inherit (config.flake-root) projectRootFile;
           # };
