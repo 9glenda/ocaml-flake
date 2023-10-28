@@ -41,27 +41,23 @@
 
   outputs = inputs @ {
     flake-parts,
-    ocaml-flake,
     opam-nix,
     treefmt-nix,
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
-            imports = let                                           
-                                                              
-    flakeModule = {                                           
-      imports = [./../../flake-module.nix];                      
-      config = {                                              
-        perSystem.ocaml.inputs = {                            
-          inherit opam-nix;                                   
-          treefmt = treefmt-nix;                            
-        };                                                    
-      };                                                      
-    };                                                        
-      in                                                      
-        [                                                     
-        flakeModule                                           
-                                                              
+      imports = let
+        flakeModule = {
+          imports = [./../../flake-module.nix];
+          config = {
+            perSystem.ocaml.inputs = {
+              inherit opam-nix;
+              treefmt = treefmt-nix;
+            };
+          };
+        };
+      in [
+        flakeModule
       ];
       systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin"];
       perSystem = _: {

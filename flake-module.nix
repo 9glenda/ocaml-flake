@@ -48,7 +48,7 @@ in {
             };
           };
         };
-        duneProjectSubmodule = types.submodule (args@{name, ...}: let
+        duneProjectSubmodule = types.submodule (args @ {name, ...}: let
           attrName = name;
         in {
           options = {
@@ -115,7 +115,7 @@ in {
             };
           };
           config = {
-            outputs = let 
+            outputs = let
               inherit (config.ocaml.inputs) opam-nix;
               opam-nixLib = opam-nix.lib.${system};
               devPackagesQuery = args.config.settings.devPackages;
@@ -145,8 +145,7 @@ in {
         config = let
           duneProjects = config.ocaml.duneProjects;
           filterProjects = duneProjects: lib.filterAttrs (n: v: v.outputs.package != null) duneProjects;
-        in
-        {
+        in {
           packages = builtins.mapAttrs (name: value: value.outputs.package) (filterProjects duneProjects);
         };
         # config = let

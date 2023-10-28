@@ -178,11 +178,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1698500398,
-        "narHash": "sha256-P+EGCA/v8tHuQ0l+raYeeANtb7PDyt1vezYkGN+vvkU=",
+        "lastModified": 1698505651,
+        "narHash": "sha256-OSZj34n+VDX4M/5L9nUfRAH5sBXgLG4qyryg9OfGGhQ=",
         "owner": "9glenda",
         "repo": "ocaml-flake",
-        "rev": "03d450f4a2f8de657fe14ee3c03865c464fce6ac",
+        "rev": "319df5084a9e159d913c54fe7e648de8e75be27b",
         "type": "github"
       },
       "original": {

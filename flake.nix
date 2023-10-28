@@ -1,6 +1,17 @@
 {
   description = "ocaml module for flake-parts";
   inputs = {
+    haumea = {
+      url = "github:nix-community/haumea/v0.2.2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    namaka = {
+      url = "github:nix-community/namaka/v0.2.0";
+      inputs = {
+        haumea.follows = "haumea";
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     opam-nix = {
       url = "github:tweag/opam-nix";
@@ -35,13 +46,14 @@
     opam-nix,
     flake-parts,
     treefmt-nix,
+    namaka,
     ...
   }: let
     flakeModule = {
       imports = [./flake-module.nix];
       config = {
         perSystem.ocaml.inputs = {
-          opam-nix = opam-nix;
+          inherit opam-nix;
           treefmt = treefmt-nix;
         };
       };
@@ -49,9 +61,9 @@
   in
     flake-parts.lib.mkFlake {inherit inputs;} {
       imports = [
-        flakeModule
-        # treefmt-nix.flakeModule
-        # inputs.flake-root.flakeModule
+        # flakeModule
+        treefmt-nix.flakeModule
+        # flake-root.flakeModule
       ];
       systems = [
         "x86_64-linux"
@@ -60,28 +72,35 @@
         "x86_64-darwin"
       ];
       perSystem = {
-        config,
-        flake-root,
+        pkgs,
+        system,
         ...
       }: {
         # flake-root.projectRootFile = "flake.nix";
-        # treefmt = import ./treefmt.nix;
+        treefmt = import ./treefmt.nix;
           # // {
           #   inherit (config.flake-root) projectRootFile;
           # };
+          devShells = {
+            default = pkgs.mkShell {
+            packages = [
+              namaka.packages.${system}.default
+            ];
+          };
+        };
       };
       flake = {
         inherit flakeModule;
-        # templates = {
-        #   simple = {
-        #     path = ./examples/simple;
-        #     description = "Simple dune project";
-        #     welcomeText = ''
-        #       You just created an ocaml-flake template. Read more about it here:
-        #       https://github.com/9glenda/ocaml-flake/tree/main/docs
-        #     '';
-        #   };
-        # };
+        templates = {
+          simple = {
+            path = ./examples/simple;
+            description = "Simple dune project";
+            welcomeText = ''
+              You just created an ocaml-flake template. Read more about it here:
+              https://github.com/9glenda/ocaml-flake/tree/main/docs
+            '';
+          };
+        };
       };
     };
 }
