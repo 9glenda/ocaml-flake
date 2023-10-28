@@ -144,9 +144,9 @@ in {
 
         config = let
           duneProjects = config.ocaml.duneProjects;
-          filterProjects = duneProjects: lib.filterAttrs (n: v: v.outputs.package != null) duneProjects;
+          filterProjects = duneProjects: lib.filterAttrs (_n: v: v.outputs.package != null) duneProjects;
         in {
-          packages = builtins.mapAttrs (name: value: value.outputs.package) (filterProjects duneProjects);
+          packages = builtins.mapAttrs (_name: value: value.outputs.package) (filterProjects duneProjects);
         };
         # config = let
         #   dunePkgs = config.ocaml.duneProjects;
