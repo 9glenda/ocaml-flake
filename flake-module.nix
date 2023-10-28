@@ -93,10 +93,6 @@ in {
                   });
                 };
               };
-              overlays = lib.mkOption {
-                type = types.listOf types.raw;
-                default = [];
-              };
               extraDevPackages = lib.mkOption {
                 type = types.listOf types.package;
                 description = lib.mdDoc "Extra packages to install";
@@ -129,23 +125,15 @@ in {
           then let
             mkScopedProject = _name: value: rec {
               inherit (config.ocaml.inputs) opam-nix;
-              inherit (value.settings) overlay overlays;
+              inherit (value.settings) overlay;
               inherit (value) name;
               opam-nixLib = opam-nix.lib.${system};
               devPackagesQuery = value.settings.devPackages;
               query = devPackagesQuery // value.settings.packages;
               scope =
-                opam-nixLib.buildDuneProject {
-                  overlays =
-                    [
-                      overlay
-                    ]
-                    ++ overlays;
-                } "${name}"
-                value.src
-                query;
-              scope' = scope;
-              main = scope'.name;
+                opam-nixLib.buildDuneProject {} "${name}" value.src query;
+              scope' = scope.overrideScope' overlay;
+              main = scope'.${name};
               devPackages =
                 builtins.attrValues
                 (pkgs.lib.getAttrs (builtins.attrNames devPackagesQuery) scope')
