@@ -5,5 +5,6 @@
     statix.enable = true;
     deadnix.enable = true;
     yamlfmt.enable = true;
+    taplo.enable = true;
   };
 }

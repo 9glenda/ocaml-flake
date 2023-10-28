@@ -204,7 +204,7 @@ in {
             };
           };
           config = let
-            inherit (config.ocaml.inputs) opam-nix treefmt;
+            inherit (config.ocaml.inputs) opam-nix;
 
             opam-nixLib = opam-nix.lib.${system};
 
@@ -226,8 +226,7 @@ in {
               (pkgs.lib.getAttrs (builtins.attrNames devPackagesQuery) scope')
               ++ args.config.devShell.extraPackages;
           in {
-            outputs = let
-            in {
+            outputs = {
               package = main;
               devShell = evalOptional {
                 condition = args.config.devShell.enable;
@@ -259,7 +258,6 @@ in {
           filterProjects = duneProjects: f: lib.filterAttrs (n: v: f n v) duneProjects;
           # example outputName `"package"`
           mapOutputs = duneProjects: f: f': builtins.mapAttrs (name: value: f name value) (filterProjects duneProjects f');
-          mapOutputs' = duneProjects: outputName: mapOutputs duneProjects (_name: value: value.outputs.${outputName}) (_n: v: v.outputs.${outputName} != null);
           mapOutputsAutoWire = duneProjects: outputName: mapOutputs duneProjects (_name: value: value.outputs.${outputName}) (_n: v: (builtins.elem "${outputName}" v.autoWire && v.outputs.${outputName} != null));
           # autoWire :: types.listOf types.enum [ ... ]
           # therefore all all the autputs supported by autoWire as a list .
