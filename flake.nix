@@ -42,8 +42,7 @@
       config = {
         perSystem.ocaml.inputs = {
           opam-nix = opam-nix;
-
-          treefmt-nix = treefmt-nix;
+          treefmt = treefmt-nix;
         };
       };
     };
@@ -51,7 +50,7 @@
     flake-parts.lib.mkFlake {inherit inputs;} {
       imports = [
         # flakeModule
-        treefmt-nix.flakeModule
+        # treefmt-nix.flakeModule
         # inputs.flake-root.flakeModule
       ];
       systems = [
