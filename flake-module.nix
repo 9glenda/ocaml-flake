@@ -144,23 +144,22 @@ in {
               };
               mkShellArgs = lib.mkOption {
                 type = types.attrsOf types.raw;
-                # description = lib.literalMD ''
-                #   Extra arguments to pass to `pkgs.mkShell`.
+                description = lib.literalMD ''
+                  Extra arguments to pass to `pkgs.mkShell`.
 
-                #   The already set arguments get overwritten. It's implemented like this:
-                #   ```nix
-                #     pkgs.mkShell ({ ... } // mkShellArgs)
-                #   ```
-                # '';
+                  The already set arguments get overwritten. It's implemented like this:
+                  ```nix
+                    pkgs.mkShell ({ ... } // mkShellArgs)
+                  ```
+                '';
                 default = {};
-                defaultText = lib.literalExpression ''{}'';
-                # example = ''
-                # {
-                #   shellHook = \'\'
-                #     echo "example shell hook"
-                #   \'\';
-                # };
-                # '';
+                example = ''
+                {
+                  shellHook = \'\'
+                    echo "example shell hook"
+                  \'\';
+                };
+                '';
               };
 
               opamPackages = lib.mkOption {
