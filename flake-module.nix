@@ -37,7 +37,7 @@ in {
           options = {
             duneProjects = lib.mkOption {
               type = types.attrsOf duneProjectSubmodule;
-              description = lib.literalMD ''
+              description = ''
                 dune Projects.
               '';
               default = {};
@@ -46,13 +46,13 @@ in {
             inputs = {
               treefmt = lib.mkOption {
                 type = types.raw;
-                description = lib.literalMD ''
+                description = ''
                   treefmt flake input
                 '';
               };
               opam-nix = lib.mkOption {
                 type = types.raw;
-                description = lib.literalMD ''
+                description = ''
                   opam-nix flake input
                 '';
               };
@@ -67,7 +67,7 @@ in {
             # most settings are in settings or deveShell to keep the toplevel settings clean
             name = lib.mkOption {
               type = types.str;
-              description = lib.literalMD ''
+              description = ''
                 name of the dune package. Defined in dune-project
               '';
               default = "${attrName}";
@@ -75,7 +75,7 @@ in {
             };
             src = lib.mkOption {
               type = types.path;
-              description = lib.literalMD ''
+              description = ''
                 name of the dune package. Defined in dune-project
               '';
             };
@@ -84,7 +84,7 @@ in {
             in
               lib.mkOption {
                 type = types.listOf (types.enum autoWireOutputs);
-                description = lib.literalMD ''
+                description = ''
                   What will be added to the flake outputs.
 
                   Note for dev shells nix will create a dev shell from the default package in case no dev shell is specified.
@@ -115,7 +115,7 @@ in {
             devShell = {
               enable = lib.mkOption {
                 type = types.bool;
-                description = lib.literalMD ''
+                description = ''
                   Create a dev shell for the project.
                   The devShell is located in `ocaml.dunePackage.<name>.outputs.devShell`.
                   To automatically add the dev shell to the outputs of the flake add `"devshell"` to `autoWire`.
@@ -124,7 +124,7 @@ in {
               };
               name = lib.mkOption {
                 type = types.str;
-                description = lib.literalMD ''
+                description = ''
                   name of the devShell
                 '';
                 default = "${attrName} development development shell";
@@ -133,7 +133,7 @@ in {
               };
               inputsFromPackage = lib.mkOption {
                 type = types.bool;
-                description = lib.literalMD ''
+                description = ''
                   Take inputs from the package.
                 '';
                 default = true;
@@ -141,7 +141,7 @@ in {
               };
               extraPackages = lib.mkOption {
                 type = types.listOf types.package;
-                description = lib.literalMD ''
+                description = ''
                   Extra packages to install into the dev shell alongside the `opamPackages`.
                 '';
                 default = [];
@@ -150,7 +150,7 @@ in {
               };
               mkShellArgs = lib.mkOption {
                 type = types.attrsOf types.raw;
-                description = lib.literalMD ''
+                description = ''
                   Extra arguments to pass to `pkgs.mkShell`.
 
                   The already set arguments get overwritten. It's implemented like this:
@@ -170,7 +170,7 @@ in {
 
               opamPackages = lib.mkOption {
                 type = types.attrsOf types.str;
-                description = lib.literalMD ''
+                description = ''
                   development packages like the lsp and ocamlformat.
                   Those packages get installed in the dev shell too.
                   If the devShell is disabled this option will be ignored.
@@ -197,7 +197,7 @@ in {
             settings = {
               overlay = lib.mkOption {
                 type = types.raw;
-                description = lib.literalMD ''
+                description = ''
                   overlay applied to opam-nix
                 '';
                 default = _: _: {};
@@ -210,7 +210,7 @@ in {
               };
               opamPackages = lib.mkOption {
                 type = types.attrsOf types.str;
-                description = lib.literalMD ''
+                description = ''
                   opam packages like the base compiler
                 '';
                 default = {
@@ -264,7 +264,7 @@ in {
       in {
         options.ocaml = lib.mkOption {
           type = ocamlSubmodule;
-          description = lib.literalMD ''
+          description = ''
             Ocaml module
           '';
           default = {};
