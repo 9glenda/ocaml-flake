@@ -1,2 +1,2 @@
-examples/*/flake.lock
+# examples/*/flake.lock
 .direnv
