@@ -115,7 +115,6 @@ in {
                   To automatically add the dev shell to the outputs of the flake add `"devshell"` to `autoWire`.
                 '';
                 default = true;
-                defaultText = lib.literalExpr "true";
               };
               name = lib.mkOption {
                 type = types.str;
@@ -132,8 +131,7 @@ in {
                   Take inputs from the package.
                 '';
                 default = true;
-                defaultText = lib.literalExpr ''true'';
-                # example = false;
+                example = false;
               };
               extraPackages = lib.mkOption {
                 type = types.listOf types.package;
@@ -146,14 +144,14 @@ in {
               };
               mkShellArgs = lib.mkOption {
                 type = types.attrsOf types.raw;
-                description = lib.literalMD ''
-                  Extra arguments to pass to `pkgs.mkShell`.
+                # description = lib.literalMD ''
+                #   Extra arguments to pass to `pkgs.mkShell`.
 
-                  The already set arguments get overwritten. It's implemented like this:
-                  ```nix
-                    pkgs.mkShell ({ ... } // mkShellArgs)
-                  ```
-                '';
+                #   The already set arguments get overwritten. It's implemented like this:
+                #   ```nix
+                #     pkgs.mkShell ({ ... } // mkShellArgs)
+                #   ```
+                # '';
                 default = {};
                 defaultText = lib.literalExpr ''{}'';
                 # example = ''
