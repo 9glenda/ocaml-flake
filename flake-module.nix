@@ -76,7 +76,7 @@ in {
               description = lib.mdDoc ''
                 name of the dune package. Defined in dune-project
               '';
-              example = ./.;
+              # example = ./.;
             };
             autoWire = let
               autoWireOutputs = lib.attrNames args.config.outputs;
@@ -89,7 +89,7 @@ in {
                   Note for dev shells nix will create a dev shell from the default package in case no dev shell is specified.
                 '';
                 default = ["devShell" "package"];
-                example = autoWireOutputs;
+                # example = autoWireOutputs;
               };
 
             # the outputs are stored here and later mapped in the global perSystem scope
@@ -128,7 +128,7 @@ in {
                   Take inputs from the package.
                 '';
                 default = true;
-                example = false;
+                # example = false;
               };
               extraPackages = lib.mkOption {
                 type = types.listOf types.package;
@@ -136,7 +136,7 @@ in {
                   Extra packages to install into the dev shell alongside the `opamPackages`.
                 '';
                 default = [];
-                example = with pkgs; [mdbook];
+                # example = with pkgs; [mdbook];
               };
               mkShellArgs = lib.mkOption {
                 type = types.attrsOf types.raw;
@@ -149,13 +149,13 @@ in {
                   ```
                 '';
                 default = {};
-                example = ''
-                  {
-                    shellHook = \'\'
-                      echo "example shell hook"
-                    \'\';
-                  };
-                '';
+                # example = ''
+                # {
+                #   shellHook = \'\'
+                #     echo "example shell hook"
+                #   \'\';
+                # };
+                # '';
               };
 
               opamPackages = lib.mkOption {
@@ -171,10 +171,10 @@ in {
                   utop = "2.13.1";
                   ocamlfind = "1.9.6";
                 };
-                example = {
-                  ocaml-lsp-server = "*";
-                  utop = "*";
-                };
+                # example = {
+                # ocaml-lsp-server = "*";
+                # utop = "*";
+                # };
               };
             };
 
@@ -186,11 +186,11 @@ in {
                 '';
                 default = _: _: {
                 };
-                example = _final: prev: {
-                  ${name} = prev.${name}.overrideAttrs (_: {
-                    doNixSupport = false;
-                  });
-                };
+                # example = _final: prev: {
+                # ${name} = prev.${name}.overrideAttrs (_: {
+                #   doNixSupport = false;
+                # });
+                # };
               };
               opamPackages = lib.mkOption {
                 type = types.attrsOf types.str;
