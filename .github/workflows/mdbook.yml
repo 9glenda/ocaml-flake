@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy mdbook
 on:
   push:
     branches:
@@ -24,7 +24,7 @@ jobs:
           echo `pwd`/mdbook >> $GITHUB_PATH
       - name: Build Book
         run: |
-          mdbook build
+          mdbook build docs
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Upload artifact
