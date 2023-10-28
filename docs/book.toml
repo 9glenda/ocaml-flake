@@ -1,0 +1,21 @@
+[book]
+authors = ["9glenda"]
+description = "A `flake-parts` module for ocaml."
+language = "en"
+multilingual = false
+src = "."
+title = "ocaml-flake"
+
+[rust]
+edition = "2021"
+
+[build]
+build-dir = "static"
+create-missing = true
+
+[preprocessor.index]
+
+[preprocessor.links]
+
+[output.html.search]
+limit-results = 15

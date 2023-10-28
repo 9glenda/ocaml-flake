@@ -76,15 +76,12 @@
         system,
         ...
       }: {
-        # flake-root.projectRootFile = "flake.nix";
         treefmt = import ./treefmt.nix;
-          # // {
-          #   inherit (config.flake-root) projectRootFile;
-          # };
           devShells = {
             default = pkgs.mkShell {
             packages = [
               namaka.packages.${system}.default
+              pkgs.mdbook
             ];
           };
         };
