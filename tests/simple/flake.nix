@@ -66,9 +66,13 @@
             default = {
               name = "my_package";
               src = ./.;
+              autoWire = [
+                "package"
+              ];
             };
           };
         };
+        # devShells = {};
       };
       flake = {
       };

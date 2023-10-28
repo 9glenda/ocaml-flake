@@ -1,5 +1,20 @@
 {
   "nodes": {
+    "call-flake": {
+      "locked": {
+        "lastModified": 1697937646,
+        "narHash": "sha256-bmhE1TmrJG4ba93l9WQTLuYM53kwGQAjYHRvHOeuxWU=",
+        "owner": "divnix",
+        "repo": "call-flake",
+        "rev": "8fea00392fe00e776007b3776aa61c212485d58c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "divnix",
+        "repo": "call-flake",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -71,16 +86,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1685133229,
-        "narHash": "sha256-FePm/Gi9PBSNwiDFq3N+DWdfxFq0UKsVVTJS3cQPn94=",
+        "lastModified": 1697205539,
+        "narHash": "sha256-gHEy0Q+eEQJkWl6/DpFxXPOlTx/lMU7Pvs/bwoq4OhI=",
         "owner": "nix-community",
         "repo": "haumea",
-        "rev": "34dd58385092a23018748b50f9b23de6266dffc2",
+        "rev": "fc119c500189f739fec7ad33d111f9c92910eccf",
         "type": "github"
       },
       "original": {
         "owner": "nix-community",
-        "ref": "v0.2.2",
         "repo": "haumea",
         "type": "github"
       }
@@ -111,16 +125,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1685739139,
-        "narHash": "sha256-CLGEW11Fo1v4vj0XSqiyW1EbhRZFO7dkgM43eKwItrk=",
+        "lastModified": 1698461546,
+        "narHash": "sha256-DjMAvl1IzCMNWAY15UsDU+4CUaid2Z8yKwFbENz5w28=",
         "owner": "nix-community",
         "repo": "namaka",
-        "rev": "d9a2cc83c1d0f68bd613f1fc909d0ef2cfffcf2e",
+        "rev": "75784dbbdf6d4bbfeb03d4f9291ea51533e25b75",
         "type": "github"
       },
       "original": {
         "owner": "nix-community",
-        "ref": "v0.2.0",
         "repo": "namaka",
         "type": "github"
       }
@@ -247,6 +260,7 @@
     },
     "root": {
       "inputs": {
+        "call-flake": "call-flake",
         "flake-parts": "flake-parts",
         "flake-root": "flake-root",
         "haumea": "haumea",

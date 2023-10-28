@@ -1,12 +1,13 @@
 {
   description = "ocaml module for flake-parts";
   inputs = {
+    call-flake.url = "github:divnix/call-flake";
     haumea = {
-      url = "github:nix-community/haumea/v0.2.2";
+      url = "github:nix-community/haumea";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     namaka = {
-      url = "github:nix-community/namaka/v0.2.0";
+      url = "github:nix-community/namaka";
       inputs = {
         haumea.follows = "haumea";
         nixpkgs.follows = "nixpkgs";
@@ -77,8 +78,8 @@
         ...
       }: {
         treefmt = import ./treefmt.nix;
-          devShells = {
-            default = pkgs.mkShell {
+        devShells = {
+          default = pkgs.mkShell {
             packages = [
               namaka.packages.${system}.default
               pkgs.mdbook

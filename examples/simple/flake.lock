@@ -81,6 +81,28 @@
         "type": "github"
       }
     },
+    "haumea": {
+      "inputs": {
+        "nixpkgs": [
+          "ocaml-flake",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1685133229,
+        "narHash": "sha256-FePm/Gi9PBSNwiDFq3N+DWdfxFq0UKsVVTJS3cQPn94=",
+        "owner": "nix-community",
+        "repo": "haumea",
+        "rev": "34dd58385092a23018748b50f9b23de6266dffc2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "ref": "v0.2.2",
+        "repo": "haumea",
+        "type": "github"
+      }
+    },
     "mirage-opam-overlays": {
       "flake": false,
       "locked": {
@@ -94,6 +116,32 @@
       "original": {
         "owner": "dune-universe",
         "repo": "mirage-opam-overlays",
+        "type": "github"
+      }
+    },
+    "namaka": {
+      "inputs": {
+        "haumea": [
+          "ocaml-flake",
+          "haumea"
+        ],
+        "nixpkgs": [
+          "ocaml-flake",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1685739139,
+        "narHash": "sha256-CLGEW11Fo1v4vj0XSqiyW1EbhRZFO7dkgM43eKwItrk=",
+        "owner": "nix-community",
+        "repo": "namaka",
+        "rev": "d9a2cc83c1d0f68bd613f1fc909d0ef2cfffcf2e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "ref": "v0.2.0",
+        "repo": "namaka",
         "type": "github"
       }
     },
@@ -169,7 +217,9 @@
       "inputs": {
         "flake-parts": "flake-parts_2",
         "flake-root": "flake-root",
+        "haumea": "haumea",
         "mirage-opam-overlays": "mirage-opam-overlays",
+        "namaka": "namaka",
         "nixpkgs": "nixpkgs_2",
         "opam-nix": "opam-nix",
         "opam-overlays": "opam-overlays",
@@ -178,11 +228,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1698505651,
-        "narHash": "sha256-OSZj34n+VDX4M/5L9nUfRAH5sBXgLG4qyryg9OfGGhQ=",
+        "lastModified": 1698513009,
+        "narHash": "sha256-90vEoeVQbLmKDdkk5HILiP2SXvVFMpqU9YRb/8fRprU=",
         "owner": "9glenda",
         "repo": "ocaml-flake",
-        "rev": "319df5084a9e159d913c54fe7e648de8e75be27b",
+        "rev": "f53901e3b5050b5b4a185c7dfb05cd4ede58ac8f",
         "type": "github"
       },
       "original": {

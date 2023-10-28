@@ -1,0 +1,2 @@
+# [show]
+# cmd = ["nix", "flake", "show", "--allow-import-from-derivation","./examples/simple"]

@@ -5,6 +5,16 @@
   flake-parts-lib,
   ...
 }: let
+  evalOptional = {
+    condition,
+    value,
+    default,
+  }:
+    if condition
+    then value
+    else default;
+  # evalNonNull = { value, default }: evalOptional { condition = (value != null); inherit value default; };
+  # evalNonNullAttr = value: evalOptional { condition = (value != null); inherit value; default = {}; };
   inherit
     (flake-parts-lib)
     mkPerSystemOption
@@ -49,14 +59,11 @@ in {
           };
         };
         duneProjectSubmodule = types.submodule (args @ {name, ...}: let
+          # name is shadowed by the name option
           attrName = name;
         in {
           options = {
-            outputs = {
-              package = lib.mkOption {
-                type = types.nullOr types.package;
-              };
-            };
+            # most settings are in settings or deveShell to keep the toplevel settings clean
             name = lib.mkOption {
               type = types.str;
               description = lib.mdDoc ''
@@ -69,15 +76,94 @@ in {
               description = lib.mdDoc ''
                 name of the dune package. Defined in dune-project
               '';
+              example = ./.;
             };
-            settings = let
-              packageName = name;
-            in {
-              devPackages = lib.mkOption {
+            autoWire = let
+              autoWireOutputs = lib.attrNames args.config.outputs;
+            in
+              lib.mkOption {
+                type = types.listOf (types.enum autoWireOutputs);
+                description = lib.mdDoc ''
+                  What will be added to the flake outputs.
+
+                  Note for dev shells nix will create a dev shell from the default package in case no dev shell is specified.
+                '';
+                default = ["devShell" "package"];
+                example = autoWireOutputs;
+              };
+
+            # the outputs are stored here and later mapped in the global perSystem scope
+            # all outputs stored in outputs must use autoWire.
+            outputs = {
+              package = lib.mkOption {
+                type = types.nullOr types.package;
+                readOnly = true;
+              };
+              devShell = lib.mkOption {
+                type = types.nullOr types.raw;
+                readOnly = true;
+              };
+            };
+
+            devShell = {
+              enable = lib.mkOption {
+                type = types.bool;
+                description = lib.mdDoc ''
+                  Create a dev shell for the project.
+                  The devShell is located in `ocaml.dunePackage.<name>.outputs.devShell`.
+                  To automatically add the dev shell to the outputs of the flake add `"devshell"` to `autoWire`.
+                '';
+                default = true;
+              };
+              name = lib.mkOption {
+                type = types.str;
+                description = lib.mdDoc ''
+                  name of the devShell
+                '';
+                default = "${attrName} development development shell";
+              };
+              inputsFromPackage = lib.mkOption {
+                type = types.bool;
+                description = lib.mdDoc ''
+                  Take inputs from the package.
+                '';
+                default = true;
+                example = false;
+              };
+              extraPackages = lib.mkOption {
+                type = types.listOf types.package;
+                description = lib.mdDoc ''
+                  Extra packages to install into the dev shell alongside the `opamPackages`.
+                '';
+                default = [];
+                example = with pkgs; [mdbook];
+              };
+              mkShellArgs = lib.mkOption {
+                type = types.attrsOf types.raw;
+                description = lib.mdDoc ''
+                  Extra arguments to pass to `pkgs.mkShell`.
+
+                  The already set arguments get overwritten. It's implemented like this:
+                  ```nix
+                    pkgs.mkShell ({ ... } // mkShellArgs)
+                  ```
+                '';
+                default = {};
+                example = ''
+                  {
+                    shellHook = \'\'
+                      echo "example shell hook"
+                    \'\';
+                  };
+                '';
+              };
+
+              opamPackages = lib.mkOption {
                 type = types.attrsOf types.str;
                 description = lib.mdDoc ''
                   development packages like the lsp and ocamlformat.
                   Those packages get installed in the dev shell too.
+                  If the devShell is disabled this option will be ignored.
                 '';
                 default = {
                   ocaml-lsp-server = "1.16.2";
@@ -85,25 +171,28 @@ in {
                   utop = "2.13.1";
                   ocamlfind = "1.9.6";
                 };
+                example = {
+                  ocaml-lsp-server = "*";
+                  utop = "*";
+                };
               };
+            };
 
+            settings = {
               overlay = lib.mkOption {
                 type = types.raw;
                 description = lib.mdDoc ''
                   overlay applied to opam-nix
                 '';
-                default = _final: prev: {
-                  ${packageName} = prev.${packageName}.overrideAttrs (_: {
+                default = _: _: {
+                };
+                example = _final: prev: {
+                  ${name} = prev.${name}.overrideAttrs (_: {
                     doNixSupport = false;
                   });
                 };
               };
-              extraDevPackages = lib.mkOption {
-                type = types.listOf types.package;
-                description = lib.mdDoc "Extra packages to install";
-                default = [];
-              };
-              packages = lib.mkOption {
+              opamPackages = lib.mkOption {
                 type = types.attrsOf types.str;
                 description = lib.mdDoc ''
                   opam packages like the base compiler
@@ -114,22 +203,45 @@ in {
               };
             };
           };
-          config = {
+          config = let
+            inherit (config.ocaml.inputs) opam-nix treefmt;
+
+            opam-nixLib = opam-nix.lib.${system};
+
+            devPackagesQuery = evalOptional {
+              condition = args.config.devShell.enable;
+              value = args.config.devShell.opamPackages;
+              default = {};
+            };
+            query = devPackagesQuery // args.config.settings.opamPackages;
+
+            scope =
+              opam-nixLib.buildDuneProject {} "${args.config.name}" args.config.src query;
+            scope' = scope.overrideScope' args.config.settings.overlay;
+
+            main = scope'.${args.config.name};
+
+            devPackages =
+              builtins.attrValues
+              (pkgs.lib.getAttrs (builtins.attrNames devPackagesQuery) scope')
+              ++ args.config.devShell.extraPackages;
+          in {
             outputs = let
-              inherit (config.ocaml.inputs) opam-nix;
-              opam-nixLib = opam-nix.lib.${system};
-              devPackagesQuery = args.config.settings.devPackages;
-              query = devPackagesQuery // args.config.settings.packages;
-              scope =
-                opam-nixLib.buildDuneProject {} "${args.config.name}" args.config.src query;
-              scope' = scope.overrideScope' args.config.settings.overlay;
-              main = scope'.${args.config.name};
-              devPackages =
-                builtins.attrValues
-                (pkgs.lib.getAttrs (builtins.attrNames devPackagesQuery) scope')
-                ++ args.config.settings.extraDevPackages;
             in {
               package = main;
+              devShell = evalOptional {
+                condition = args.config.devShell.enable;
+                value = pkgs.mkShell ({
+                    # TODO: extra inputs from? or should this be done through overriding?
+                    inputsFrom =
+                      if args.config.devShell.inputsFromPackage
+                      then [main]
+                      else [];
+                    buildInputs = devPackages;
+                  }
+                  // args.config.devShell.mkShellArgs);
+                default = null;
+              };
             };
           };
         });
@@ -143,10 +255,19 @@ in {
         };
 
         config = let
-          duneProjects = config.ocaml.duneProjects;
-          filterProjects = duneProjects: lib.filterAttrs (_n: v: v.outputs.package != null) duneProjects;
+          inherit (config.ocaml) duneProjects;
+          filterProjects = duneProjects: f: lib.filterAttrs (n: v: f n v) duneProjects;
+          # example outputName `"package"`
+          mapOutputs = duneProjects: f: f': builtins.mapAttrs (name: value: f name value) (filterProjects duneProjects f');
+          mapOutputs' = duneProjects: outputName: mapOutputs duneProjects (_name: value: value.outputs.${outputName}) (_n: v: v.outputs.${outputName} != null);
+          mapOutputsAutoWire = duneProjects: outputName: mapOutputs duneProjects (_name: value: value.outputs.${outputName}) (_n: v: (builtins.elem "${outputName}" v.autoWire && v.outputs.${outputName} != null));
+          # autoWire :: types.listOf types.enum [ ... ]
+          # therefore all all the autputs supported by autoWire as a list .
+          # autoWireMap = autoWire: f: lib.mapListToAttrs (item: lib.nameValuePair "${item}s" (f item)) autoWire;
+          # autoWireMap' = autoWire: duneProjects: autoWireMap autoWire mapOutputs duneProjects;
         in {
-          packages = builtins.mapAttrs (_name: value: value.outputs.package) (filterProjects duneProjects);
+          packages = mapOutputsAutoWire duneProjects "package";
+          devShells = mapOutputsAutoWire duneProjects "devShell";
         };
         # config = let
         #   dunePkgs = config.ocaml.duneProjects;
