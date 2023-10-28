@@ -113,8 +113,7 @@ in {
         };
         config = let
           dunePkgs = config.ocaml.duneProjects;
-        in (
-          if (dunePkgs != {})
+        in if (dunePkgs != {})
           then let
             mkScopedProject = name: value: rec {
               inherit (config.ocaml.inputs) opam-nix;
@@ -148,8 +147,7 @@ in {
               })
             dunePkgs;
           }
-          else {}
-        );
+          else {};
       });
   };
 }
