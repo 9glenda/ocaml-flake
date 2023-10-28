@@ -1,5 +1,5 @@
 {
-  description = "Description for the project";
+  description = "Ocaml project using `ocaml-flake` and `flake-parts`";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -25,8 +25,6 @@
             };
           };
         };
-      };
-      flake = {
       };
     };
 }
