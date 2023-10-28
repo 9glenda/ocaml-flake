@@ -33,6 +33,7 @@ in {
               description = lib.mdDoc ''
                 dune Projects.
               '';
+              default = {};
             };
             inputs = {
               opam-nix = lib.mkOption {
@@ -111,38 +112,44 @@ in {
           default = {};
         };
         config = let
-          mkScopedProject = name: value: rec {
-            package = value.name;
-            inherit (config.ocaml.inputs) opam-nix;
-            opam-nixLib = opam-nix.lib.${system};
-            devPackagesQuery = value.settings.devPackages;
-            query = devPackagesQuery // value.settings.query;
-            scope = opam-nixLib.buildDuneProject {} "${package}" value.src query;
-            inherit (value.settings) overlay;
-            scope' = scope.overrideScope' overlay;
-            main = scope'.${package};
-            devPackages =
-              builtins.attrValues
-              (pkgs.lib.getAttrs (builtins.attrNames devPackagesQuery) scope')
-              ++ value.settings.extraDevPackages;
-          };
-        in {
-          packages = builtins.mapAttrs (name: value: let
-            scoped = mkScopedProject name value;
-          in
-            scoped.main)
-          config.ocaml.duneProjects;
+          dunePkgs = config.ocaml.duneProjects;
+        in (
+          if (dunePkgs != {})
+          then let
+            mkScopedProject = name: value: rec {
+              inherit (config.ocaml.inputs) opam-nix;
+              package = value.name;
+              opam-nixLib = opam-nix.lib.${system};
+              devPackagesQuery = value.settings.devPackages;
+              query = devPackagesQuery // value.settings.query;
+              scope = opam-nixLib.buildDuneProject {} "${package}" value.src query;
+              inherit (value.settings) overlay;
+              scope' = scope.overrideScope' overlay;
+              main = scope'.${package};
+              devPackages =
+                builtins.attrValues
+                (pkgs.lib.getAttrs (builtins.attrNames devPackagesQuery) scope')
+                ++ value.settings.extraDevPackages;
+            };
+          in {
+            packages = builtins.mapAttrs (name: value: let
+              scoped = mkScopedProject name value;
+            in
+              scoped.main)
+            dunePkgs;
 
-          devShells = builtins.mapAttrs (name: value: let
-            scoped = mkScopedProject name value;
-            inherit (scoped) main devPackages;
-          in
-            pkgs.mkShell {
-              inputsFrom = [main];
-              buildInputs = devPackages;
-            })
-          config.ocaml.duneProjects;
-        };
+            devShells = builtins.mapAttrs (name: value: let
+              scoped = mkScopedProject name value;
+              inherit (scoped) main devPackages;
+            in
+              pkgs.mkShell {
+                inputsFrom = [main];
+                buildInputs = devPackages;
+              })
+            dunePkgs;
+          }
+          else {}
+        );
       });
   };
 }
