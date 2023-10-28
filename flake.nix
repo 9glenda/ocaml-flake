@@ -62,11 +62,10 @@
         ...
       }: {
         flake-root.projectRootFile = "flake.nix";
-        treefmt =
-          import ./treefmt.nix
-          // {
-            inherit (config.flake-root) projectRootFile;
-          };
+        treefmt = import ./treefmt.nix;
+          # // {
+          #   inherit (config.flake-root) projectRootFile;
+          # };
       };
       flake = {
         inherit flakeModule;
