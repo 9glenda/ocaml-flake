@@ -1,4 +1,5 @@
 {
+  projectRoot = "flake.nix";
   programs = {
     alejandra.enable = true;
     statix.enable = true;
