@@ -10,6 +10,7 @@
       inputs.opam-overlays.follows = "opam-overlays";
       inputs.mirage-opam-overlays.follows = "mirage-opam-overlays";
     };
+    flake-root.url = "github:srid/flake-root";
     opam-repository = {
       url = "github:ocaml/opam-repository";
       flake = false;
@@ -47,6 +48,7 @@
       imports = [
         # flakeModule
         treefmt-nix.flakeModule
+        inputs.flake-root.flakeModule
       ];
       systems = [
         "x86_64-linux"
@@ -54,11 +56,30 @@
         "aarch64-darwin"
         "x86_64-darwin"
       ];
-      perSystem = _: {
-        treefmt = import ./treefmt.nix;
+      perSystem = {
+        config,
+        flake-root,
+        ...
+      }: {
+        flake-root.projectRootFile = "flake.nix";
+        treefmt =
+          import ./treefmt.nix
+          // {
+            inherit (config.flake-root) projectRootFile;
+          };
       };
       flake = {
         inherit flakeModule;
+        templates = {
+          simple = {
+            path = ./examples/simple;
+            description = "Simple dune project";
+            welcomeText = ''
+              You just created an ocaml-flake template. Read more about it here:
+              https://github.com/9glenda/ocaml-flake/tree/main/docs
+            '';
+          };
+        };
       };
     };
 }

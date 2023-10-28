@@ -33,6 +33,12 @@ in {
               default = {};
             };
             inputs = {
+              treefmt = lib.mkOption {
+                type = types.raw;
+                description = lib.mdDoc ''
+                  treefmt flake input
+                '';
+              };
               opam-nix = lib.mkOption {
                 type = types.raw;
                 description = lib.mdDoc ''
