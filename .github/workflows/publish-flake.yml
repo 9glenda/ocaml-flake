@@ -1,4 +1,4 @@
-name: "Publish a flake to flakestry"
+name: "Publish flake"
 on:
   push:
     tags:
@@ -12,6 +12,7 @@ on:
         required: true
 jobs:
   publish-flakestry:
+    name: "Publish to `flakestry.dev`"
     runs-on: ubuntu-latest
     permissions:
       id-token: "write"
@@ -21,7 +22,8 @@ jobs:
         with:
           version: "${{ inputs.tag || github.ref_name }}"
   publish-flakehub:
-    runs-on: "ubuntu-latest"
+    name: "Publish to `flakehub.com`"
+    runs-on: ubuntu-latest
     permissions:
       id-token: "write"
       contents: "read"
