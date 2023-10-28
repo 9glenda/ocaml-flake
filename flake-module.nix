@@ -41,7 +41,7 @@ in {
                 dune Projects.
               '';
               default = {};
-              defaultText = lib.literalExpr "{}";
+              defaultText = lib.literalExpression "{}";
             };
             inputs = {
               treefmt = lib.mkOption {
@@ -71,7 +71,7 @@ in {
                 name of the dune package. Defined in dune-project
               '';
               default = "${attrName}";
-              defaultText = lib.literalExpr "";
+              defaultText = lib.literalExpression "";
             };
             src = lib.mkOption {
               type = types.path;
@@ -90,7 +90,7 @@ in {
                   Note for dev shells nix will create a dev shell from the default package in case no dev shell is specified.
                 '';
                 default = ["devShell" "package"];
-                defaultText = lib.literalExpr ''["devShell" "package"]'';
+                defaultText = lib.literalExpression ''["devShell" "package"]'';
               };
 
             # the outputs are stored here and later mapped in the global perSystem scope
@@ -123,7 +123,7 @@ in {
                 '';
                 default = "${attrName} development development shell";
                 # TODO
-                defaultText = lib.literalExpr ''" development development shell" '';
+                defaultText = lib.literalExpression ''" development development shell" '';
               };
               inputsFromPackage = lib.mkOption {
                 type = types.bool;
@@ -139,7 +139,7 @@ in {
                   Extra packages to install into the dev shell alongside the `opamPackages`.
                 '';
                 default = [];
-                defaultText = lib.literalExpr ''[]'';
+                defaultText = lib.literalExpression ''[]'';
                 # example = with pkgs; [mdbook];
               };
               mkShellArgs = lib.mkOption {
@@ -153,7 +153,7 @@ in {
                 #   ```
                 # '';
                 default = {};
-                defaultText = lib.literalExpr ''{}'';
+                defaultText = lib.literalExpression ''{}'';
                 # example = ''
                 # {
                 #   shellHook = \'\'
@@ -176,7 +176,7 @@ in {
                   utop = "2.13.1";
                   ocamlfind = "1.9.6";
                 };
-                defaultText = lib.literalExpr ''                  {
+                defaultText = lib.literalExpression ''                  {
                                     ocaml-lsp-server = "1.16.2";
                                     ocamlformat = "0.26.1";
                                     utop = "2.13.1";
@@ -196,7 +196,7 @@ in {
                   overlay applied to opam-nix
                 '';
                 default = _: _: {};
-                defaultText = lib.literalExpr ''_: _: { } '';
+                defaultText = lib.literalExpression ''_: _: { } '';
                 # example = _final: prev: {
                 # ${name} = prev.${name}.overrideAttrs (_: {
                 #   doNixSupport = false;
@@ -211,7 +211,7 @@ in {
                 default = {
                   ocaml-base-compiler = "5.1.0";
                 };
-                defaultText = lib.literalExpr ''{ ocaml-base-compiler = "5.1.0"; } '';
+                defaultText = lib.literalExpression ''{ ocaml-base-compiler = "5.1.0"; } '';
               };
             };
           };
