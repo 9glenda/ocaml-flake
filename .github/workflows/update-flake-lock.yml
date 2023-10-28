@@ -10,8 +10,8 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+    name: "Update flake.lock"
     steps:
-      name: "Update flake.lock"
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Install Nix
