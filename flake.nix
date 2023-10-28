@@ -48,7 +48,7 @@
       imports = [
         # flakeModule
         treefmt-nix.flakeModule
-        inputs.flake-root.flakeModule
+        # inputs.flake-root.flakeModule
       ];
       systems = [
         "x86_64-linux"
@@ -61,7 +61,7 @@
         flake-root,
         ...
       }: {
-        flake-root.projectRootFile = "flake.nix";
+        # flake-root.projectRootFile = "flake.nix";
         treefmt = import ./treefmt.nix;
           # // {
           #   inherit (config.flake-root) projectRootFile;
@@ -69,16 +69,16 @@
       };
       flake = {
         inherit flakeModule;
-        templates = {
-          simple = {
-            path = ./examples/simple;
-            description = "Simple dune project";
-            welcomeText = ''
-              You just created an ocaml-flake template. Read more about it here:
-              https://github.com/9glenda/ocaml-flake/tree/main/docs
-            '';
-          };
-        };
+        # templates = {
+        #   simple = {
+        #     path = ./examples/simple;
+        #     description = "Simple dune project";
+        #     welcomeText = ''
+        #       You just created an ocaml-flake template. Read more about it here:
+        #       https://github.com/9glenda/ocaml-flake/tree/main/docs
+        #     '';
+        #   };
+        # };
       };
     };
 }
