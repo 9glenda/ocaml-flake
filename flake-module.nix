@@ -1,11 +1,10 @@
 # Largely inspired by:
 # https://github.com/srid/proc-flake/blob/master/flake-module.nix
 {
-  config,
   lib,
   flake-parts-lib,
   ...
-} @ args: let
+}: let
   inherit
     (flake-parts-lib)
     mkPerSystemOption
@@ -14,8 +13,6 @@
     (lib)
     types
     ;
-
-  inputs = args.config.ocaml-nix._inputs;
 in {
   options = {
     perSystem =
@@ -113,7 +110,8 @@ in {
         };
         config = let
           dunePkgs = config.ocaml.duneProjects;
-        in if (dunePkgs != {})
+        in
+          if (dunePkgs != {})
           then let
             mkScopedProject = name: value: rec {
               inherit (config.ocaml.inputs) opam-nix;
