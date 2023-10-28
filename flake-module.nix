@@ -81,20 +81,28 @@ in {
                   ocamlfind = "1.9.6";
                 };
               };
+
               overlay = lib.mkOption {
                 type = types.raw;
+                description = lib.mdDoc ''
+                  overlay applied to opam-nix
+                '';
                 default = _final: prev: {
                   ${packageName} = prev.${packageName}.overrideAttrs (_: {
                     doNixSupport = false;
                   });
                 };
               };
+              overlays = lib.mkOption {
+                type = types.listOf types.raw;
+                default = [];
+              };
               extraDevPackages = lib.mkOption {
                 type = types.listOf types.package;
                 description = lib.mdDoc "Extra packages to install";
                 default = [];
               };
-              query = lib.mkOption {
+              packages = lib.mkOption {
                 type = types.attrsOf types.str;
                 description = lib.mdDoc ''
                   opam packages like the base compiler
@@ -119,16 +127,25 @@ in {
         in
           if (dunePkgs != {})
           then let
-            mkScopedProject = name: value: rec {
+            mkScopedProject = _name: value: rec {
               inherit (config.ocaml.inputs) opam-nix;
-              package = value.name;
+              inherit (value.settings) overlay overlays;
+              inherit (value) name;
               opam-nixLib = opam-nix.lib.${system};
               devPackagesQuery = value.settings.devPackages;
-              query = devPackagesQuery // value.settings.query;
-              scope = opam-nixLib.buildDuneProject {} "${package}" value.src query;
-              inherit (value.settings) overlay;
-              scope' = scope.overrideScope' overlay;
-              main = scope'.${package};
+              query = devPackagesQuery // value.settings.packages;
+              scope =
+                opam-nixLib.buildDuneProject {
+                  overlays =
+                    [
+                      overlay
+                    ]
+                    ++ overlays;
+                } "${name}"
+                value.src
+                query;
+              scope' = scope;
+              main = scope'.name;
               devPackages =
                 builtins.attrValues
                 (pkgs.lib.getAttrs (builtins.attrNames devPackagesQuery) scope')
