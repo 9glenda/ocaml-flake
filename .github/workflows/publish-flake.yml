@@ -33,3 +33,4 @@ jobs:
       - uses: "DeterminateSystems/flakehub-push@main"
         with:
           visibility: "public"
+          tag: "${{ inputs.tag || github.ref_name }}"
