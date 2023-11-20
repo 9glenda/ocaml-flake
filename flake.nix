@@ -95,11 +95,17 @@
           };
         };
       };
-      flake = {
+      flake = let
+        mkTemplate = path:
+          builtins.path {
+            inherit path;
+            filter = name: t: baseNameOf name != "flake.lock";
+          };
+      in {
         inherit flakeModule;
         templates = {
           simple = {
-            path = ./examples/simple;
+            path = mkTemplate ./examples/simple;
             description = "Simple dune project";
             welcomeText = ''
               You just created an ocaml-flake template. Read more about it here:
