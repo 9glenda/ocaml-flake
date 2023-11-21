@@ -175,7 +175,7 @@ in {
               };
 
               opamPackages = lib.mkOption {
-                type = types.attrsOf types.str;
+                type = types.attrsOf (types.nullOr types.str);
                 description = ''
                   development packages like the lsp and ocamlformat.
                   Those packages get installed in the dev shell too.
