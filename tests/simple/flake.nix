@@ -5,11 +5,12 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     opam-nix = {
       url = "github:tweag/opam-nix";
-      inputs.opam-repository.follows = "opam-repository";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.opam2json.follows = "opam2json";
-      inputs.opam-overlays.follows = "opam-overlays";
-      inputs.mirage-opam-overlays.follows = "mirage-opam-overlays";
+      inputs = { opam-repository.follows = "opam-repository";
+        nixpkgs.follows = "nixpkgs";
+        opam2json.follows = "opam2json";
+        opam-overlays.follows = "opam-overlays";
+        mirage-opam-overlays.follows = "mirage-opam-overlays";
+      };
     };
     flake-root.url = "github:srid/flake-root";
     opam-repository = {
@@ -42,6 +43,7 @@
   outputs = inputs @ {
     flake-parts,
     opam-nix,
+    opam-repository,
     treefmt-nix,
     ...
   }:
@@ -51,7 +53,7 @@
           imports = [./../../flake-module.nix];
           config = {
             perSystem.ocaml.inputs = {
-              inherit opam-nix;
+              inherit opam-nix opam-repository;
               treefmt = treefmt-nix;
             };
           };

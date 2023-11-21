@@ -50,6 +50,12 @@ in {
                   treefmt flake input
                 '';
               };
+              opam-repository = lib.mkOption {
+                type = types.raw;
+                description = ''
+                  opam-repository flake input
+                '';
+              };
               opam-nix = lib.mkOption {
                 type = types.raw;
                 description = ''
@@ -208,6 +214,16 @@ in {
                 # });
                 # };
               };
+              repos = lib.mkOption {
+                type = types.listOf types.raw;
+                description = ''
+                  opam repos
+                '';
+                default = [
+                  config.ocaml.inputs.opam-repository
+                ];
+                defaultText = lib.literalExpression ''[]'';
+              };
               opamPackages = lib.mkOption {
                 type = types.attrsOf types.str;
                 description = ''
@@ -232,8 +248,11 @@ in {
             };
             query = devPackagesQuery // args.config.settings.opamPackages;
 
-            scope =
-              opam-nixLib.buildDuneProject {} "${args.config.name}" args.config.src query;
+            scope = opam-nixLib.buildDuneProject {
+              inherit (args.config.settings) repos;
+            } "${args.config.name}"
+            args.config.src
+            query;
             scope' = scope.overrideScope' args.config.settings.overlay;
 
             main = scope'.${args.config.name};

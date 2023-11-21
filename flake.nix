@@ -63,6 +63,7 @@
       config = {
         perSystem.ocaml.inputs = {
           inherit opam-nix;
+          inherit (inputs) opam-repository;
           treefmt = treefmt-nix;
         };
       };
@@ -99,7 +100,7 @@
         mkTemplate = path:
           builtins.path {
             inherit path;
-            filter = name: t: baseNameOf name != "flake.lock";
+            filter = name: _t: baseNameOf name != "flake.lock";
           };
       in {
         inherit flakeModule;
