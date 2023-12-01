@@ -104,7 +104,7 @@
           };
       in {
         inherit flakeModule;
-        templates = {
+        templates = rec {
           simple = {
             path = mkTemplate ./examples/simple;
             description = "Simple dune project";
@@ -113,6 +113,7 @@
               https://github.com/9glenda/ocaml-flake/tree/main/docs
             '';
           };
+          default = simple;
         };
       };
     };
