@@ -80,10 +80,7 @@
         "aarch64-darwin"
         "x86_64-darwin"
       ];
-      perSystem = {
-        pkgs,
-        ...
-      }: {
+      perSystem = {pkgs, ...}: {
         treefmt = import ./treefmt.nix;
         devShells = {
           default = pkgs.mkShell {
