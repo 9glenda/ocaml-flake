@@ -5,7 +5,8 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     opam-nix = {
       url = "github:tweag/opam-nix";
-      inputs = { opam-repository.follows = "opam-repository";
+      inputs = {
+        opam-repository.follows = "opam-repository";
         nixpkgs.follows = "nixpkgs";
         opam2json.follows = "opam2json";
         opam-overlays.follows = "opam-overlays";

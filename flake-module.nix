@@ -248,11 +248,12 @@ in {
             };
             query = devPackagesQuery // args.config.settings.opamPackages;
 
-            scope = opam-nixLib.buildDuneProject {
-              inherit (args.config.settings) repos;
-            } "${args.config.name}"
-            args.config.src
-            query;
+            scope =
+              opam-nixLib.buildDuneProject {
+                inherit (args.config.settings) repos;
+              } "${args.config.name}"
+              args.config.src
+              query;
             scope' = scope.overrideScope' args.config.settings.overlay;
 
             main = scope'.${args.config.name};

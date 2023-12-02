@@ -55,7 +55,6 @@
     opam-nix,
     flake-parts,
     treefmt-nix,
-    namaka,
     ...
   }: let
     flakeModule = {
@@ -83,35 +82,42 @@
       ];
       perSystem = {
         pkgs,
-        system,
         ...
       }: {
         treefmt = import ./treefmt.nix;
         devShells = {
           default = pkgs.mkShell {
             packages = [
-              namaka.packages.${system}.default
               pkgs.mdbook
             ];
           };
         };
       };
       flake = let
-        mkTemplate = path:
-          builtins.path {
+        mkTemplate = {
+          path,
+          description,
+          welcomeText ? ''
+            You just created an ocaml-flake template. Read more about it here:
+            https://github.com/9glenda/ocaml-flake/tree/main/docs
+          '',
+        }: {
+          path = builtins.path {
             inherit path;
             filter = name: _t: baseNameOf name != "flake.lock";
           };
+          inherit description welcomeText;
+        };
       in {
         inherit flakeModule;
         templates = rec {
-          simple = {
-            path = mkTemplate ./examples/simple;
+          full = mkTemplate {
+            path = ./examples/full;
+            description = "Full dune project";
+          };
+          simple = mkTemplate {
+            path = ./examples/simple;
             description = "Simple dune project";
-            welcomeText = ''
-              You just created an ocaml-flake template. Read more about it here:
-              https://github.com/9glenda/ocaml-flake/tree/main/docs
-            '';
           };
           default = simple;
         };
